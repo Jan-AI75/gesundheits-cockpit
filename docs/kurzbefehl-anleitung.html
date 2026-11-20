@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>Kurzbefehle einrichten</title>
+<style>
+  body { margin: 0; background: #141a22; color: #e4e8ee; font: 16px/1.55 -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif; }
+  main { max-width: 640px; margin: 0 auto; padding: calc(env(safe-area-inset-top) + 24px) 20px 60px; }
+  h1 { font-size: 26px; line-height: 1.2; margin: 0 0 8px; }
+  h2 { font-size: 19px; margin: 36px 0 8px; }
+  p, li { color: #c9d0da; }
+  ol { padding-left: 22px; }
+  li { margin: 8px 0; }
+  li::marker { color: #8e99a8; }
+  code, .v { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13.5px; background: #232d3a; padding: 1px 5px; border-radius: 5px; color: #e4e8ee; }
+  pre { background: #1b232e; border-radius: 10px; padding: 12px 14px; overflow-x: auto; font-size: 13px; line-height: 1.5; }
+  .note { background: #1b232e; border-left: 3px solid #d6a35c; border-radius: 8px; padding: 10px 14px; margin: 16px 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 12px 0; }
+  th, td { text-align: left; padding: 8px 6px; border-top: 1px solid #2c3746; vertical-align: top; }
+  th { color: #8e99a8; font-weight: 500; }
+  a { color: #7fb8bf; }
+</style>
+</head>
+<body>
+<main>
+<h1>Kurzbefehle einrichten</h1>
+<p>Das Cockpit bekommt seine Werte aus Apple Health über einen Kurzbefehl. Er liest die Werte, hängt sie an die Adresse des Cockpits an und öffnet es. Die Werte stehen hinter dem <code>#</code> der Adresse. Dieser Teil wird nie an einen Server geschickt, die Daten bleiben auf dem iPhone.</p>
+<p>Du baust zuerst einen kleinen Probelauf nur mit Schritten. Erst wenn der klappt, kommen die übrigen Werte dazu.</p>
+
+<h2>1. Probelauf mit Schritten</h2>
+<ol>
+  <li>Öffne die App <b>Kurzbefehle</b>, tippe auf <b>+</b> und nenne den Kurzbefehl <b>Cockpit</b>.</li>
+  <li>Füge die Aktion <b>Health-Proben suchen</b> hinzu. Tippe dazu im Suchfeld „Health“ ein. Auf Englisch heißt sie „Find Health Samples“.<br>
+    Stelle ein: Typ <b>Schritte</b>, Filter <b>Startdatum</b> ist in den letzten <b>14 Tagen</b>, Gruppieren nach <b>Tag</b>, Sortieren nach <b>Startdatum</b>.</li>
+  <li>Füge <b>Datum formatieren</b> hinzu. Tippe auf das Eingabefeld, wähle das Ergebnis aus Schritt 2 und darin das Detail <b>Startdatum</b>. Datumsformat: <b>ISO 8601</b>, „Zeit einschließen“ an.</li>
+  <li>Füge <b>Text kombinieren</b> hinzu, Eingabe: das formatierte Datum. Trennzeichen: <b>Eigenes</b>, und dort einen senkrechten Strich <code>|</code> eingeben.</li>
+  <li>Füge <b>Variable festlegen</b> hinzu und nenne sie <span class="v">D_Schritte</span>.</li>
+  <li>Füge noch einmal <b>Text kombinieren</b> hinzu. Eingabe: das Ergebnis aus Schritt 2, darin das Detail <b>Wert</b>. Trennzeichen wieder <code>|</code>.</li>
+  <li>Füge <b>Variable festlegen</b> hinzu und nenne sie <span class="v">V_Schritte</span>.</li>
+  <li>Füge eine <b>Text</b>-Aktion hinzu. Tippe diesen Inhalt ab und setze an den markierten Stellen die beiden Variablen ein (lange auf die Stelle tippen, dann „Variable auswählen“):
+<pre>{"v":1,"steps":{"d":"<span class="v">D_Schritte</span>","v":"<span class="v">V_Schritte</span>"}}</pre></li>
+  <li>Füge <b>URL codieren</b> hinzu, Eingabe: der Text aus Schritt 8.</li>
+  <li>Füge eine weitere <b>Text</b>-Aktion hinzu:
+<pre>https://jan-ai75.github.io/gesundheits-cockpit/#d=<span class="v">URL-codierter Text</span></pre></li>
+  <li>Füge <b>URLs öffnen</b> hinzu.</li>
+  <li>Führe den Kurzbefehl aus. Beim ersten Mal fragt das iPhone, welche Health-Daten der Kurzbefehl lesen darf. Erlaube den Zugriff.</li>
+</ol>
+<p>Danach sollte sich das Cockpit öffnen und unter <b>Heute</b> deine Schritte zeigen. Zeigt es stattdessen einen Hinweis, dass die Daten unvollständig sind, schick mir einen Screenshot vom Kurzbefehl.</p>
+
+<h2>2. Auf den Home-Bildschirm legen</h2>
+<p>Öffne in der Kurzbefehle-App die Details des Kurzbefehls <b>Cockpit</b> (das <b>ⓘ</b> unten) und tippe auf <b>Zum Home-Bildschirm</b>. Öffne das Cockpit ab jetzt immer über dieses Symbol, dann sind die Werte bei jedem Öffnen aktuell.</p>
+<div class="note">Leg nicht zusätzlich die Webseite selbst auf den Home-Bildschirm. Sie hätte einen getrennten Speicher und würde deine Daten nicht sehen.</div>
+
+<h2>3. Die übrigen Werte ergänzen</h2>
+<p>Für jeden weiteren Wert wiederholst du die Schritte 2 bis 7 mit dem passenden Typ. Gruppiere nur dort nach Tag, wo es in der Tabelle steht. Bei Werten mit Zeitpunkt (<b>t</b>) und beim Schlaf bleibt die Gruppierung aus.</p>
+<table>
+  <thead><tr><th>Schlüssel</th><th>Health-Typ</th><th>Gruppieren</th><th>Teile</th></tr></thead>
+  <tbody>
+    <tr><td><code>steps</code></td><td>Schritte</td><td>Tag</td><td>d = Startdatum, v = Wert</td></tr>
+    <tr><td><code>exMin</code></td><td>Trainingsminuten</td><td>Tag</td><td>d, v</td></tr>
+    <tr><td><code>dist</code></td><td>Gehen + Laufen (Distanz)</td><td>Tag</td><td>d, v (in km)</td></tr>
+    <tr><td><code>rhr</code></td><td>Ruheherzfrequenz</td><td>Tag</td><td>d, v</td></tr>
+    <tr><td><code>hr</code></td><td>Herzfrequenz</td><td>Tag</td><td>d, v</td></tr>
+    <tr><td><code>kcalIn</code></td><td>Energie aus der Ernährung (Yazio)</td><td>Tag</td><td>d, v (in kcal)</td></tr>
+    <tr><td><code>protein</code>, <code>carbs</code>, <code>fat</code></td><td>Protein, Kohlenhydrate, Fett gesamt</td><td>Tag</td><td>d, v</td></tr>
+    <tr><td><code>weight</code></td><td>Gewicht</td><td>keine</td><td>t = Startdatum, v = Wert</td></tr>
+    <tr><td><code>sys</code></td><td>Blutdruck systolisch</td><td>keine</td><td>t, v</td></tr>
+    <tr><td><code>dia</code></td><td>Blutdruck diastolisch</td><td>keine</td><td>t, v</td></tr>
+    <tr><td><code>sleep</code></td><td>Schlafanalyse</td><td>keine</td><td>s = Startdatum, e = Enddatum, k = Wert</td></tr>
+    <tr><td><code>workouts</code></td><td>Trainings</td><td>keine</td><td>s = Startdatum, e = Enddatum, n = Art des Trainings, km = Distanz</td></tr>
+  </tbody>
+</table>
+<p>Am Ende sieht der Text aus Schritt 8 so aus. Jede Reihe hat die Form <code>"schlüssel":{"teil":"Variable", …}</code>, die Reihen trennt ein Komma:</p>
+<pre>{"v":1,
+ "steps":{"d":"…","v":"…"},
+ "exMin":{"d":"…","v":"…"},
+ "dist":{"d":"…","v":"…"},
+ "rhr":{"d":"…","v":"…"},
+ "hr":{"d":"…","v":"…"},
+ "kcalIn":{"d":"…","v":"…"},
+ "protein":{"d":"…","v":"…"},
+ "carbs":{"d":"…","v":"…"},
+ "fat":{"d":"…","v":"…"},
+ "weight":{"t":"…","v":"…"},
+ "sys":{"t":"…","v":"…"},
+ "dia":{"t":"…","v":"…"},
+ "sleep":{"s":"…","e":"…","k":"…"},
+ "workouts":{"s":"…","e":"…","n":"…","km":"…"}}</pre>
+<p>Zahlen dürfen mit Komma oder mit Einheit kommen, also <code>82,4 kg</code>. Das Cockpit liest sie trotzdem richtig.</p>
+<div class="note">Die Trainingsliste ist wichtig: Über die Art des Trainings trennt das Cockpit Training und Walking. Gehen, Walking und Wandern zählen als Walking, alles andere als Training. Bietet die Aktion den Typ „Trainings“ nicht an, lass <code>workouts</code> weg. Dann hakst du Training und Walking unter „Heute“ von Hand ab.</div>
+
+<h2>4. Verlauf laden</h2>
+<p>Für die ersten Monate und nach längeren Pausen gibt es einen zweiten Kurzbefehl. Dupliziere <b>Cockpit</b> (lange drücken, „Duplizieren“) und nenne die Kopie <b>Verlauf laden</b>. Ändere in jeder Aktion <b>Health-Proben suchen</b> den Zeitraum von 14 Tagen auf <b>3 Monate</b>.</p>
+<p>Willst du noch weiter zurück, stell den Filter auf „Startdatum liegt zwischen“ und lade Quartal für Quartal. Das Cockpit führt alles zusammen. Bereits vorhandene Tage werden ersetzt, nicht doppelt gezählt.</p>
+<p>Meldet das Cockpit, dass die Daten unvollständig sind, war die Adresse zu lang. Nimm dann einen kürzeren Zeitraum. Am meisten Platz braucht der Schlaf.</p>
+
+<h2>5. Automatisch abgleichen</h2>
+<p>Damit du nicht ans Öffnen denken musst, startet das iPhone den Kurzbefehl <b>Cockpit</b> selbst, und zwar genau dann, wenn neue Werte da sind. Jeder Lauf liest die letzten 14 Tage. Fällt einer aus, holt der nächste alles nach.</p>
+<p>So legst du eine Automation an: In der App <b>Kurzbefehle</b> unten auf <b>Automation</b> tippen, dann auf <b>+</b>. Auslöser wählen (siehe Tabelle), <b>Sofort ausführen</b> einstellen, auf <b>Weiter</b> tippen und als Aktion den Kurzbefehl <b>Cockpit</b> auswählen.</p>
+<table>
+  <tr><th>Wofür</th><th>Auslöser</th><th>Einstellung</th></tr>
+  <tr><td>Schlaf der letzten Nacht</td><td>Wecker</td><td>„Aufwachen“ bzw. dein Wecker, <b>wird gestoppt</b></td></tr>
+  <tr><td>Blutdruck</td><td>App</td><td>Omron connect, <b>wird geschlossen</b></td></tr>
+  <tr><td>Schritte und Training des Tages</td><td>Tageszeit</td><td>z. B. 21:30 Uhr, täglich</td></tr>
+</table>
+<p>Nach dem Auslösen öffnet sich Safari kurz mit dem Cockpit. Das muss so sein, denn erst dabei werden die Werte gespeichert. Danach kannst du Safari einfach wieder verlassen.</p>
+<div class="note">Öffne die Omron-App nach dem Messen, bis die Messung übertragen ist. Erst dann steht sie in Health, und erst beim Schließen der App holt der Kurzbefehl sie ab. Läuft die Abend-Automation, während das iPhone gesperrt ist, kann iOS den Zugriff auf Health verweigern. Dann erscheint eine Mitteilung, und der nächste Lauf holt die Werte nach.</div>
+
+<p><a href="../index.html">Zurück zum Cockpit</a></p>
+</main>
+</body>
+</html>
